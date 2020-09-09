@@ -12,8 +12,8 @@ example
                                                      Command class :hexadecimal BYTE
                                                      PID           :hex 2Bytes
                                                      data          :[] array payload
-            msg serialstatus;
+            msg deviceinfostatus;
             
        
-            serialstatus = (msg)devices.write(devices.buildToSend(7, set_serial)); Console.WriteLine(serialstatus._ToString() + " || " + serialstatus.message);
+            deviceinfostatus = (msg)devices.write(devices.buildToSend(7, get_info)); Console.WriteLine(deviceinfostatus._ToString() + " || " + deviceinfostatus.message);
             
