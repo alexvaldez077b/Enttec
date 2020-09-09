@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FTD2XX_NET;
+using System.Windows.Forms;
 namespace RDM
 {
     class msg
@@ -57,7 +58,22 @@ namespace RDM
 
         FTDI dmx512Pro = new FTDI();
 
-        byte [] source = { 0x36,0x38,0xEE,0xEE,0xEE,0xEE };
+        ////////// globals variables
+        public byte GET = 0x20;
+        public byte SET = 0x30;
+
+        public UInt16 RESET = 4097;
+        public UInt16 GETINFO = 96;
+        public UInt16 SELFTEST = 4128;
+        public UInt16 STATUSMESSAGE = 0x0030;
+        public UInt16 QUEUED_MESSAGE = 0x0020;
+        public UInt16 SENSORVALUE = 0x0201;
+
+
+        ////////////////////////////
+
+
+        byte[] source = { 0x36,0x38,0xEE,0xEE,0xEE,0xEE };
         
 
         int TN = 0;
@@ -145,15 +161,31 @@ namespace RDM
 
         public void setSource( byte[] src)
         {
-            source[0] = 0x45;
-            source[1] = 0x4E;
+            if( src != null && src.Length >2)
+            {
+                try
+                {
+                    source[0] = 0x45;
+                    source[1] = 0x4E;
 
-            source[2] = src[0];
-            source[3] = src[1];
-            source[4] = src[2];
-            source[5] = src[3];
+                    source[2] = src[0];
+                    source[3] = src[1];
+                    source[4] = src[2];
+                    source[5] = src[3];
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message);
+                    throw;
+                }
 
-            
+            }
+            else
+            {
+                MessageBox.Show("DMX not found!");
+            }
+
+
 
         }
 
@@ -219,6 +251,7 @@ namespace RDM
 
             if(!dmx512Pro.IsOpen)
                 dmx512Pro.OpenByDescription("DMX USB PRO");
+            
 
 
             //DMX_PRO.SetDataCharacteristics(FTDI.FT_DATA_BITS.FT_BITS_8, FTDI.FT_STOP_BITS.FT_STOP_BITS_2, FTDI.FT_PARITY.FT_PARITY_NONE);
@@ -252,8 +285,7 @@ namespace RDM
             _out.info();
 
 
-            do
-            {
+            
                 Console.WriteLine(string.Format("Try: {0} ", ++_try));
                 dmx512Pro.Write(payload, payload.Length, ref tx);
                 
@@ -273,8 +305,7 @@ namespace RDM
                 dmx512Pro.GetRxBytesAvailable(ref rx);
 
 
-            } while (rx == 0  );
-
+            
             
             byte line_status = 0;
             byte[] buffer = new byte[rx];
@@ -386,3 +417,4 @@ namespace RDM
 
     }
 }
+ 
